@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import classNames from 'classnames';
 import { getAnswerFor } from 'riddle-exam';
+import { useRiddlesPage } from './use-riddles-page';
 
 type Riddle = {
     id: string;
@@ -14,11 +15,12 @@ type Riddle = {
 
 export const RiddlePage = () => {
     const { id } = useParams<{ id: string }>();
+    const { randomRiddleId } = useRiddlesPage();
     const [riddle, setRiddle] = useState<Riddle>();
     const [isLoading, setIsLoading] = useState(true);
     const [correct, setCorrect] = useState<{ id: string }>();
     const [selected, setSelected] = useState<string>();
-    const [random, setRandom] = useState<string>();
+    // const [random, setRandom] = useState<string>();
 
     const handleClick = async (id: string) => {
         if (selected) {
@@ -97,9 +99,9 @@ export const RiddlePage = () => {
                     {'This time your answer is wrong.'}
                 </div>
             )}
-            {correct && random && (
+            {correct && randomRiddleId && (
                 <div className="mt-5">
-                    <Link to={`/riddle/${random}`} reloadDocument className="underline">
+                    <Link to={`/riddle/${randomRiddleId}`} reloadDocument className="underline">
                         Play one more
                     </Link>
                 </div>
