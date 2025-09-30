@@ -14,3 +14,7 @@ export function getRandomRiddle(riddles: Riddle[], exludeId?: Riddle['id']) {
     }
     return ids[Math.floor(Math.random() * ids.length)];
 }
+
+export function sortAnswers(answers: Riddle['answers']) {
+    return answers.toSorted(() => Math.random() - 0.5);
+}
