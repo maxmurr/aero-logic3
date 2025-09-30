@@ -7,7 +7,10 @@ export type Riddle = {
     }[];
 };
 
-export function getRandomRiddle(riddles: Riddle[]) {
-    const ids = riddles.map(({ id: riddleId }) => riddleId);
+export function getRandomRiddle(riddles: Riddle[], exludeId?: Riddle['id']) {
+    let ids = riddles.map(({ id: riddleId }) => riddleId);
+    if (exludeId) {
+        ids = ids.filter((id) => id !== exludeId);
+    }
     return ids[Math.floor(Math.random() * ids.length)];
 }

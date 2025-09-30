@@ -1,65 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { getAnswerFor } from 'riddle-exam';
 import { useRiddlesPage } from './use-riddles-page';
 
-type Riddle = {
-    id: string;
-    contents: string;
-    answers: {
-        id: string;
-        text: string;
-    }[];
-};
+
 
 export const RiddlePage = () => {
-    const { id } = useParams<{ id: string }>();
-    const { randomRiddleId } = useRiddlesPage();
-    const [riddle, setRiddle] = useState<Riddle>();
-    const [isLoading, setIsLoading] = useState(true);
-    const [correct, setCorrect] = useState<{ id: string }>();
-    const [selected, setSelected] = useState<string>();
-    // const [random, setRandom] = useState<string>();
-
-    const handleClick = async (id: string) => {
-        if (selected) {
-            return;
-        }
-
-        setSelected(id);
-
-        const data = await getAnswerFor(riddle!.id);
-
-        setCorrect(data);
-    };
+    const { randomRiddleId, correct, selected, riddle, handleClick } = useRiddlesPage();
 
     const sorted = useMemo(
         () => riddle?.answers?.toSorted(() => Math.random() - 0.5),
         [riddle?.answers],
     );
 
-    useEffect(() => {
-        if (correct) {
-            fetch('http://localhost:3000/riddles')
-                .then((response) => response.json())
-                .then((riddles: Riddle[]) => {
-                    const ids = riddles
-                        .map(({ id: riddleId }) => riddleId)
-                        .filter((riddleId) => riddleId !== id);
-                    setRandom(ids[Math.floor(Math.random() * ids.length)]);
-                });
-        }
-    }, [correct]);
-
-    useEffect(() => {
-        fetch(`http://localhost:3000/riddles/${id}`)
-            .then((response) => response.json())
-            .then(setRiddle)
-            .finally(() => setIsLoading(false));
-    }, []);
-
-    if (!riddle || !sorted || isLoading) {
+    if (!riddle || !sorted) {
         return null;
     }
 
