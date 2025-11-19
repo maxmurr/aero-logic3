@@ -1,7 +1,13 @@
-import { getRandomRiddle, Riddle, sortAnswers } from "../domain/riddle/riddle.service";
+import { getRandomRiddle, Riddle } from "../domain/riddle/riddle.service";
 
-export function createRiddlePageModel(riddles: Riddle[], currentRiddle?: Riddle, correct?: Riddle['answers'][number], selected?: Riddle['answers'][number]['id']) {
-    let sortedAnswers = sortAnswers(currentRiddle?.answers ?? []).map((answer) => {
+export function createRiddlePageModel(
+    riddles: Riddle[],
+    currentRiddle: Riddle | undefined,
+    shuffledAnswers: Riddle['answers'],
+    correct?: Riddle['answers'][number],
+    selected?: Riddle['answers'][number]['id']
+) {
+    let sortedAnswers = shuffledAnswers.map((answer) => {
         let answerState = 'initial';
 
         if (selected === answer.id &&

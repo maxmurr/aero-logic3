@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRiddles } from './domain/riddle/use-riddles';
 import { useParams } from 'react-router-dom';
-import { getAnswerFor } from 'riddle-exam';
 import { createRiddlePageModel } from './services/riddle-page.service';
 import { useRiddleById } from './domain/riddle/use-riddle-by-id';
-import { Riddle } from './domain/riddle/riddle.service';
+import { useRiddleAnswer } from './domain/riddle/use-riddle-answer';
+import { Riddle, sortAnswers } from './domain/riddle/riddle.service';
 
 export const useRiddlesPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -14,30 +14,34 @@ export const useRiddlesPage = () => {
 
     const { data = [] } = useRiddles();
     const { data: riddle } = useRiddleById(id!);
-    const model = createRiddlePageModel(data, riddle, correct, selected);
+    const { data: answerData } = useRiddleAnswer(riddle?.id);
 
-    const handleClick = async (id: Riddle['answers'][number]['id']) => {
+    const shuffledAnswers = useMemo(
+        () => riddle ? sortAnswers(riddle.answers) : [],
+        [riddle]
+    );
+
+    const model = createRiddlePageModel(data, riddle, shuffledAnswers, correct, selected);
+
+    useEffect(() => {
+        if (selected && answerData && !correct) {
+            setCorrect(answerData);
+        }
+    }, [selected, answerData, correct]);
+
+    const handleClick = (id: Riddle['answers'][number]['id']) => {
         if (selected) {
             return;
         }
 
         setSelected(id);
-
-        const data = await getAnswerFor(riddle!.id);
-
-        setCorrect(data);
     };
-
-    const sorted = useMemo(
-        () => model.sortedAnswers,
-        [riddle],
-    );
 
     return {
         ...model,
         handleClick,
         correct,
         riddle,
-        sorted
+        sorted: model.sortedAnswers
     };
 };
