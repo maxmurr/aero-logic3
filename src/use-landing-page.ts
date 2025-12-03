@@ -3,7 +3,7 @@ import { useRiddles } from './domain/riddle/use-riddles';
 
 export function useLandingPage() {
     const { data: riddles } = useRiddles();
-    const model = createLandingPageModel(riddles);
+    const model = createLandingPageModel(riddles, new Date());
 
     return model
 }
