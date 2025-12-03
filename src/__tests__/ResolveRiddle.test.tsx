@@ -1,4 +1,6 @@
 import { App } from "../App";
+import { ContextProvider } from '../common/context';
+import { provideRiddleAnswer } from '../domain/riddle/riddle-answer-provider';
 
 describe('Resolve riddle', () => {
     it('resolve riddle successfully', () => {
@@ -10,7 +12,14 @@ describe('Resolve riddle', () => {
             ] },
         });
 
-        cy.mount(<App />, '/riddle/RIDDLE_ID');
+        const fake = () => Promise.resolve({ id: '1', text: 'Answer 1' });
+
+        cy.mount(
+            <ContextProvider providers={[provideRiddleAnswer(fake)]}>
+                <App />
+            </ContextProvider>,
+            '/riddle/RIDDLE_ID',
+        );
 
         cy.contains('My riddle contents').should('be.visible');
         cy.contains('Answer 1').should('be.visible');
